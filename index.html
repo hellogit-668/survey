@@ -122,12 +122,11 @@ body {
   font-size: 15px;
   color: #333;
 }
-.option:hover { border-color: #6ab85a; background: #f8fcf7; }
+.option:hover { border-color: #e6a817; background: #fffdf5; cursor: pointer; }
 .option.selected {
-  border-color: #4a8c3f;
-  background: #f0f8ed;
+  border-color: #e6a817;
+  background: #fff8e1;
 }
-.option input { display: none; }
 .radio-dot {
   width: 20px; height: 20px;
   border: 2px solid #ccc;
@@ -137,12 +136,12 @@ body {
   transition: all 0.2s;
 }
 .option.selected .radio-dot {
-  border-color: #4a8c3f;
+  border-color: #e6a817;
 }
 .option.selected .radio-dot::after {
   content: '';
   width: 10px; height: 10px;
-  background: #4a8c3f;
+  background: #e6a817;
   border-radius: 50%;
 }
 
@@ -164,17 +163,16 @@ body {
   font-size: 15px;
   color: #333;
 }
-.likert-row:hover { border-color: #6ab85a; background: #f8fcf7; }
+.likert-row:hover { border-color: #e6a817; background: #fffdf5; cursor: pointer; }
 .likert-row.selected {
-  border-color: #4a8c3f;
-  background: #f0f8ed;
+  border-color: #e6a817;
+  background: #fff8e1;
 }
-.likert-row input { display: none; }
 .likert-num {
   width: 32px; height: 32px;
   border-radius: 50%;
-  background: #e8f0e6;
-  color: #2d5a27;
+  background: #eee;
+  color: #666;
   display: flex; align-items: center; justify-content: center;
   font-weight: 700;
   font-size: 15px;
@@ -182,7 +180,7 @@ body {
   transition: all 0.2s;
 }
 .likert-row.selected .likert-num {
-  background: #4a8c3f;
+  background: #e6a817;
   color: #fff;
 }
 
@@ -302,10 +300,10 @@ body {
 <div class="container" id="app"></div>
 
 <script>
-const questions = [
+const rawQuestions = [
   // === 基本情况 (Q1-Q7) ===
   {
-    id: 1, section: '基本情况',
+    id: 1, realNum: 1, section: '基本情况',
     title: '1. 您是否购买过户外品牌产品？',
     type: 'choice',
     options: [
@@ -315,7 +313,7 @@ const questions = [
     skipIf: '否'
   },
   {
-    id: 2, section: '基本情况',
+    id: 2, realNum: 2, section: '基本情况',
     title: '2. 您的性别是？',
     type: 'choice',
     options: [
@@ -324,7 +322,7 @@ const questions = [
     ]
   },
   {
-    id: 3, section: '基本情况',
+    id: 3, realNum: 3, section: '基本情况',
     title: '3. 您的年龄是？',
     type: 'choice',
     options: [
@@ -336,7 +334,7 @@ const questions = [
     ]
   },
   {
-    id: 4, section: '基本情况',
+    id: 4, realNum: 4, section: '基本情况',
     title: '4. 您的教育程度是？',
     type: 'choice',
     options: [
@@ -347,7 +345,7 @@ const questions = [
     ]
   },
   {
-    id: 5, section: '基本情况',
+    id: 5, realNum: 5, section: '基本情况',
     title: '5. 您每月可支配消费金额为？',
     type: 'choice',
     options: [
@@ -358,7 +356,7 @@ const questions = [
     ]
   },
   {
-    id: 6, section: '基本情况',
+    id: 6, realNum: 6, section: '基本情况',
     title: '6. 您购买户外品牌产品的主要渠道是？',
     type: 'choice',
     options: [
@@ -369,7 +367,7 @@ const questions = [
     ]
   },
   {
-    id: 7, section: '基本情况',
+    id: 7, realNum: 7, section: '基本情况',
     title: '7. 您购买户外品牌产品的频率是？',
     type: 'choice',
     options: [
@@ -379,93 +377,97 @@ const questions = [
       { label: '频繁购买（每月及以上）', value: 'D' }
     ]
   },
-  // === 量表题 (Q8-Q24) ===
+  // === 量表题 ===
   {
-    id: 8, section: '一、全渠道基础服务体验',
+    id: 8, realNum: 8, section: '一、全渠道基础服务体验',
     title: '8. 我可通过线上、线下多渠道便捷获取户外品牌的产品介绍、活动信息',
     type: 'likert'
   },
   {
-    id: 9, section: '一、全渠道基础服务体验',
+    id: 9, realNum: 9, section: '一、全渠道基础服务体验',
     title: '9. 户外品牌线上线下渠道的产品价格、服务标准、售后政策保持统一',
     type: 'likert'
   },
   {
-    id: 10, section: '一、全渠道基础服务体验',
+    id: 10, realNum: 10, section: '一、全渠道基础服务体验',
     title: '10. 户外品牌各渠道的咨询客服响应及时，能够有效解答我的消费疑问',
     type: 'likert'
   },
   {
-    id: 11, section: '一、全渠道基础服务体验',
+    id: 11, realNum: 11, section: '一、全渠道基础服务体验',
     title: '11. 我可自由切换线上线下渠道完成选购、退换货、售后保养等消费流程',
     type: 'likert'
   },
   {
-    id: 12, section: '二、绿色营销服务体验',
+    id: 12, realNum: 12, section: '二、绿色营销服务体验',
     title: '12. 该户外品牌会主动公示产品环保材质、低碳生产、可持续发展相关信息',
     type: 'likert'
   },
   {
-    id: 13, section: '二、绿色营销服务体验',
+    id: 13, realNum: 13, section: '二、绿色营销服务体验',
     title: '13. 该户外品牌提供绿色包装、旧衣回收、户外生态保护公益等绿色服务',
     type: 'likert'
   },
   {
-    id: 14, section: '二、绿色营销服务体验',
+    id: 14, realNum: 14, section: '二、绿色营销服务体验',
     title: '14. 品牌会通过各渠道普及户外环保知识、绿色消费理念，引导低碳户外出行',
     type: 'likert'
   },
   {
-    id: 15, section: '二、绿色营销服务体验',
+    id: 15, realNum: 15, section: '二、绿色营销服务体验',
     title: '15. 该品牌的绿色营销服务真实可信，不存在虚假环保宣传、过度营销行为',
     type: 'likert'
   },
   {
-    id: 16, section: '三、消费感知价值体验',
+    id: 16, realNum: 16, section: '三、消费感知价值体验',
     title: '16. 该户外品牌的全渠道服务能够让我感受到优质的消费体验，性价比高',
     type: 'likert'
   },
   {
-    id: 17, section: '三、消费感知价值体验',
+    id: 17, realNum: 17, section: '三、消费感知价值体验',
     title: '17. 品牌的绿色营销服务能够满足我对绿色消费、健康户外的心理需求',
     type: 'likert'
   },
   {
-    id: 18, section: '三、消费感知价值体验',
+    id: 18, realNum: 18, section: '三、消费感知价值体验',
     title: '18. 选择该品牌的产品和服务，能提升我的户外消费幸福感与认同感',
     type: 'likert'
   },
   {
-    id: 19, section: '三、消费感知价值体验',
+    id: 19, realNum: 19, section: '三、消费感知价值体验',
     title: '19. 综合服务与产品品质，我认为该户外品牌具备良好的消费价值',
     type: 'likert'
   },
   {
-    id: 20, section: '消费者购买行为',
+    id: 20, realNum: 20, section: '消费者购买行为',
     title: '20. 优质的全渠道服务和绿色营销服务，会让我优先选择该户外品牌产品',
     type: 'likert'
   },
   {
-    id: 21, section: '消费者购买行为',
+    id: 21, realNum: 21, section: '消费者购买行为',
     title: '21. 良好的品牌服务体验和感知价值，会促使我做出即时购买的消费决策',
     type: 'likert'
   },
   {
-    id: 22, section: '消费者购买行为',
+    id: 22, realNum: 22, section: '消费者购买行为',
     title: '22. 满意的服务体验会让我增加该品牌户外产品的购买频次与消费金额',
     type: 'likert'
   },
   {
-    id: 23, section: '消费者购买行为',
+    id: 23, realNum: 23, section: '消费者购买行为',
     title: '23. 我会因优质的全渠道服务和绿色服务，持续复购该品牌产品',
     type: 'likert'
   },
   {
-    id: 24, section: '消费者购买行为',
+    id: 24, realNum: 24, section: '消费者购买行为',
     title: '24. 良好的消费体验会让我主动推荐他人购买该户外品牌产品',
     type: 'likert'
   }
 ];
+
+// 直接使用原始题目，不做任何复制/占位
+var questions = rawQuestions;
+var REAL_TOTAL = rawQuestions.length;
 
 const likertLabels = [
   { label: '完全不同意', value: 1 },
@@ -475,13 +477,17 @@ const likertLabels = [
   { label: '完全同意', value: 5 }
 ];
 
-const totalQuestions = questions.length;
+const totalQuestions = REAL_TOTAL;
+
+// ★★★ 替换为你的 Google Apps Script Web 应用 URL ★★★
+const SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbz7lHFJt44hJawVFS2TwTadXmiwyFP53__KNoDvkerJnwETHDmo7BqOSSeSk3-kxCgS/exec';
 
 const state = {
   screen: 'intro', // intro | survey | review | thanks
   currentIndex: 0, // current visible question index (0-based, within visibleQuestions)
   answers: {},     // { questionId: value }
-  skipped: false   // Q1 answered "否"
+  skipped: false,  // Q1 answered "否"
+  advanceTimer: null // prevent double-advance
 };
 
 let visibleQuestions = []; // computed based on skip logic
@@ -544,10 +550,9 @@ function startSurvey() {
 // === SURVEY ===
 function renderSurvey() {
   const q = visibleQuestions[state.currentIndex];
-  const progress = ((state.currentIndex + 1) / visibleQuestions.length) * 100;
+  const progress = (q.realNum / REAL_TOTAL) * 100;
   const isFirst = state.currentIndex === 0;
   const isLast = state.currentIndex === visibleQuestions.length - 1;
-  const hasAnswer = state.answers[q.id] !== undefined;
 
   const currentSection = q.section;
   const prevQ = state.currentIndex > 0 ? visibleQuestions[state.currentIndex - 1] : null;
@@ -558,85 +563,80 @@ function renderSurvey() {
     optionsHtml = '<div class="options">';
     q.options.forEach(opt => {
       const sel = state.answers[q.id] === opt.value ? ' selected' : '';
-      optionsHtml += `
-        <label class="option${sel}" onclick="selectAnswer(${q.id}, '${opt.value}')">
-          <input type="radio" name="q${q.id}" value="${opt.value}" ${sel ? 'checked' : ''}>
-          <span class="radio-dot"></span>
-          <span>${opt.label}</span>
-        </label>`;
+      optionsHtml += '<div class="option' + sel + '" onclick="selectAnswer(' + q.id + ',\'' + opt.value + '\')">'
+        + '<span class="radio-dot"></span>'
+        + '<span>' + opt.label + '</span>'
+        + '</div>';
     });
     optionsHtml += '</div>';
   } else {
     optionsHtml = '<div class="likert-options">';
     likertLabels.forEach(item => {
       const sel = state.answers[q.id] === item.value ? ' selected' : '';
-      optionsHtml += `
-        <label class="likert-row${sel}" onclick="selectAnswer(${q.id}, ${item.value})">
-          <input type="radio" name="q${q.id}" value="${item.value}" ${sel ? 'checked' : ''}>
-          <span class="likert-num">${item.value}</span>
-          <span>${item.label}</span>
-        </label>`;
+      optionsHtml += '<div class="likert-row' + sel + '" onclick="selectAnswer(' + q.id + ',' + item.value + ')">'
+        + '<span class="likert-num">' + item.value + '</span>'
+        + '<span>' + item.label + '</span>'
+        + '</div>';
     });
     optionsHtml += '</div>';
   }
 
-  const sectionTagHtml = showSectionTag ? `<div class="section-tag">${currentSection}</div>` : '';
+  const sectionTagHtml = showSectionTag ? '<div class="section-tag">' + currentSection + '</div>' : '';
 
-  app.innerHTML = `
-    <div class="header">
-      <h1>户外品牌全渠道服务体验调查问卷</h1>
-      <div class="subtitle">1-5分别代表"完全不同意"、"不太同意"、"一般"、"比较同意"、"完全同意"</div>
-    </div>
-    <div class="progress-wrap">
-      <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
-    </div>
-    <div class="counter">第 <strong>${state.currentIndex + 1}</strong> / ${visibleQuestions.length} 题</div>
-    <div class="question-area">
-      ${sectionTagHtml}
-      <div class="question-title">${q.title}</div>
-      ${optionsHtml}
-    </div>
-    <div class="nav">
-      <button class="btn-prev" ${isFirst ? 'disabled' : ''} onclick="prevQuestion()">上一题</button>
-      ${isLast ? `
-        <button class="btn-submit" onclick="goReview()">检查并提交</button>
-      ` : `
-        <button class="btn-next" onclick="nextQuestion()">下一题</button>
-      `}
-    </div>
-    <div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>
-  `;
+  app.innerHTML = '<div class="header">'
+    + '<h1>户外品牌全渠道服务体验调查问卷</h1>'
+    + '<div class="subtitle">1-5分别代表"完全不同意"、"不太同意"、"一般"、"比较同意"、"完全同意"</div>'
+    + '</div>'
+    + '<div class="progress-wrap">'
+    + '<div class="progress-bar"><div class="progress-fill" style="width:' + progress + '%"></div></div>'
+    + '</div>'
+    + '<div class="counter">第 <strong>' + q.realNum + '</strong> / ' + REAL_TOTAL + ' 题</div>'
+    + '<div class="question-area">'
+    + sectionTagHtml
+    + '<div class="question-title">' + q.title + '</div>'
+    + optionsHtml
+    + '</div>'
+    + '<div class="nav">'
+    + '<button class="btn-prev" ' + (isFirst ? 'disabled' : '') + ' onclick="prevQuestion()">上一题</button>'
+    + (isLast
+      ? '<button class="btn-submit" onclick="goReview()">检查并提交</button>'
+      : '<button class="btn-next" onclick="nextQuestion()">下一题</button>')
+    + '</div>'
+    + '<div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>';
 }
 
 function selectAnswer(qId, value) {
+  // 防重复点击
+  if (state.answers[qId] === value) return;
+
   state.answers[qId] = value;
+  if (state.advanceTimer) { clearTimeout(state.advanceTimer); state.advanceTimer = null; }
+
   render();
-
   buildVisibleQuestions();
-  const idx = state.currentIndex;
-  const isLast = idx >= visibleQuestions.length - 1;
 
-  // Q1 skip: auto-jump to review page
+  var isLast = state.currentIndex >= visibleQuestions.length - 1;
+
+  // Q1 选"否"：跳转到提交页
   if (qId === 1 && value === '否') {
-    setTimeout(() => {
+    state.advanceTimer = setTimeout(function() {
+      state.advanceTimer = null;
       state.screen = 'review';
       render();
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 350);
+    }, 400);
     return;
   }
 
-  // Last question: stay, let user click "检查并提交"
   if (isLast) return;
 
-  // Auto-advance to next question
-  setTimeout(() => {
-    if (state.screen === 'survey' && state.currentIndex < visibleQuestions.length - 1) {
-      state.currentIndex++;
-      render();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, 350);
+  state.advanceTimer = setTimeout(function() {
+    state.advanceTimer = null;
+    if (state.screen !== 'survey') return;
+    state.currentIndex++;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 400);
 }
 
 function prevQuestion() {
@@ -653,6 +653,7 @@ function nextQuestion() {
     alert('请先选择本题的答案');
     return;
   }
+  if (state.advanceTimer) { clearTimeout(state.advanceTimer); state.advanceTimer = null; }
   if (state.currentIndex < visibleQuestions.length - 1) {
     state.currentIndex++;
     render();
@@ -676,35 +677,36 @@ function goReview() {
 function renderReview() {
   let itemsHtml = '';
   let answeredCount = 0;
-  visibleQuestions.forEach(q => {
+  var reviewQuestions = state.skipped ? rawQuestions.filter(function(q) { return q.id === 1; }) : rawQuestions;
+  reviewQuestions.forEach(function(q) {
     const display = getAnswerDisplay(q);
     if (display) {
       answeredCount++;
-      itemsHtml += `<div class="review-item"><div class="q">${q.title}</div><div class="a">${display}</div></div>`;
+      itemsHtml += '<div class="review-item"><div class="q">' + q.title + '</div><div class="a">' + display + '</div></div>';
     } else {
-      itemsHtml += `<div class="review-item unanswered"><div class="q">${q.title}</div><div class="a">未作答</div></div>`;
+      itemsHtml += '<div class="review-item unanswered"><div class="q">' + q.title + '</div><div class="a">未作答</div></div>';
     }
   });
 
-  const allAnswered = answeredCount === visibleQuestions.length;
+  var reviewTotal = state.skipped ? 1 : REAL_TOTAL;
+  var allAnswered = answeredCount === reviewTotal;
 
-  app.innerHTML = `
-    <div class="header">
-      <h1>请确认您的答案</h1>
-      <div class="subtitle">已答 ${answeredCount} / ${visibleQuestions.length} 题</div>
-    </div>
-    <div class="progress-wrap">
-      <div class="progress-bar"><div class="progress-fill" style="width:${(answeredCount / visibleQuestions.length) * 100}%"></div></div>
-    </div>
-    <div class="review-section">
-      ${itemsHtml}
-    </div>
-    <div class="nav">
-      <button class="btn-prev" onclick="backToSurvey()">返回修改</button>
-      <button class="btn-submit" onclick="submitSurvey()">${allAnswered ? '提交答卷' : '确认提交（含未答题）'}</button>
-    </div>
-    <div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>
-  `;
+  app.innerHTML = ''
+    + '<div class="header">'
+    +   '<h1>请确认您的答案</h1>'
+    +   '<div class="subtitle">已答 ' + answeredCount + ' / ' + reviewTotal + ' 题</div>'
+    + '</div>'
+    + '<div class="progress-wrap">'
+    +   '<div class="progress-bar"><div class="progress-fill" style="width:' + ((answeredCount / reviewTotal) * 100) + '%"></div></div>'
+    + '</div>'
+    + '<div class="review-section">'
+    +   itemsHtml
+    + '</div>'
+    + '<div class="nav">'
+    +   '<button class="btn-prev" onclick="backToSurvey()">返回修改</button>'
+    +   '<button class="btn-submit" onclick="submitSurvey()">' + (allAnswered ? '提交答卷' : '确认提交（含未答题）') + '</button>'
+    + '</div>'
+    + '<div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>';
 }
 
 function backToSurvey() {
@@ -719,11 +721,15 @@ function submitSurvey() {
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Log answers to console (for debugging / data collection)
-  console.log('=== 问卷答案 ===', state.answers);
-
-  // You could send data to a server here:
-  // fetch('/api/survey', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(state.answers) });
+  // 提交到 Google Sheets
+  if (SUBMIT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+    fetch(SUBMIT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers: state.answers })
+    }).catch(function(){});
+  }
 }
 
 // === THANKS ===
