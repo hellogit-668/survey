@@ -122,12 +122,11 @@ body {
   font-size: 15px;
   color: #333;
 }
-.option:hover { border-color: #e6a817; background: #fffdf5; }
+.option:hover { border-color: #e6a817; background: #fffdf5; cursor: pointer; }
 .option.selected {
   border-color: #e6a817;
   background: #fff8e1;
 }
-.option input { display: none; }
 .radio-dot {
   width: 20px; height: 20px;
   border: 2px solid #ccc;
@@ -164,12 +163,11 @@ body {
   font-size: 15px;
   color: #333;
 }
-.likert-row:hover { border-color: #e6a817; background: #fffdf5; }
+.likert-row:hover { border-color: #e6a817; background: #fffdf5; cursor: pointer; }
 .likert-row.selected {
   border-color: #e6a817;
   background: #fff8e1;
 }
-.likert-row input { display: none; }
 .likert-num {
   width: 32px; height: 32px;
   border-radius: 50%;
@@ -467,15 +465,8 @@ const rawQuestions = [
   }
 ];
 
-// 第N题与第N+1题之间插入空题作为占位，双击bug正好跳过空题，落在下一真題
-var questions = [];
-for (var i = 0; i < rawQuestions.length; i++) {
-  questions.push(rawQuestions[i]);
-  if (i < rawQuestions.length - 1) {
-    // 每题后插入一个空占位（最后一题不需要）
-    questions.push({ id: 0, realNum: 0, section: '', title: '', type: 'spacer' });
-  }
-}
+// 直接使用原始题目，不做任何复制/占位
+var questions = rawQuestions;
 var REAL_TOTAL = rawQuestions.length;
 
 const likertLabels = [
@@ -558,53 +549,39 @@ function startSurvey() {
 
 // === SURVEY ===
 function renderSurvey() {
-  var q = visibleQuestions[state.currentIndex];
+  const q = visibleQuestions[state.currentIndex];
+  const progress = (q.realNum / REAL_TOTAL) * 100;
+  const isFirst = state.currentIndex === 0;
+  const isLast = state.currentIndex === visibleQuestions.length - 1;
 
-  // 空占位题：双击跳过用，不显示任何内容
-  if (q.type === 'spacer') {
-    app.innerHTML = '<div class="header"><h1>户外品牌全渠道服务体验调查问卷</h1></div>'
-      + '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div></div>'
-      + '<div class="counter">&nbsp;</div>'
-      + '<div class="question-area"></div>'
-      + '<div class="nav"><button class="btn-prev" onclick="prevQuestion()">上一题</button><button class="btn-next" onclick="nextQuestion()">下一题</button></div>'
-      + '<div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>';
-    return;
-  }
+  const currentSection = q.section;
+  const prevQ = state.currentIndex > 0 ? visibleQuestions[state.currentIndex - 1] : null;
+  const showSectionTag = !prevQ || prevQ.section !== currentSection;
 
-  var progress = (q.realNum / REAL_TOTAL) * 100;
-  var isFirst = state.currentIndex === 0;
-  var isLast = state.currentIndex === visibleQuestions.length - 1;
-
-  var currentSection = q.section;
-  var prevQ = state.currentIndex > 0 ? visibleQuestions[state.currentIndex - 1] : null;
-  var showSectionTag = !prevQ || prevQ.section !== currentSection;
-
-  var optionsHtml = '';
+  let optionsHtml = '';
   if (q.type === 'choice') {
     optionsHtml = '<div class="options">';
-    q.options.forEach(function(opt) {
-      var sel = state.answers[q.id] === opt.value ? ' selected' : '';
-      optionsHtml += '<label class="option' + sel + '" onclick="selectAnswer(' + q.id + ', \'' + opt.value + '\')">'
-        + '<input type="radio" name="q' + q.id + '" value="' + opt.value + '" ' + (sel ? 'checked' : '') + '>'
+    q.options.forEach(opt => {
+      const sel = state.answers[q.id] === opt.value ? ' selected' : '';
+      optionsHtml += '<div class="option' + sel + '" onclick="selectAnswer(' + q.id + ',\'' + opt.value + '\')">'
         + '<span class="radio-dot"></span>'
         + '<span>' + opt.label + '</span>'
-        + '</label>';
+        + '</div>';
     });
     optionsHtml += '</div>';
   } else {
     optionsHtml = '<div class="likert-options">';
-    likertLabels.forEach(function(item) {
-      var sel = state.answers[q.id] === item.value ? ' selected' : '';
-      optionsHtml += '<label class="likert-row' + sel + '" onclick="selectAnswer(' + q.id + ', ' + item.value + ')">'
-        + '<input type="radio" name="q' + q.id + '" value="' + item.value + '" ' + (sel ? 'checked' : '') + '>'
+    likertLabels.forEach(item => {
+      const sel = state.answers[q.id] === item.value ? ' selected' : '';
+      optionsHtml += '<div class="likert-row' + sel + '" onclick="selectAnswer(' + q.id + ',' + item.value + ')">'
         + '<span class="likert-num">' + item.value + '</span>'
         + '<span>' + item.label + '</span>'
-        + '</label>';
+        + '</div>';
     });
     optionsHtml += '</div>';
   }
 
-  var sectionTagHtml = showSectionTag ? '<div class="section-tag">' + currentSection + '</div>' : '';
+  const sectionTagHtml = showSectionTag ? '<div class="section-tag">' + currentSection + '</div>' : '';
 
   app.innerHTML = '<div class="header">'
     + '<h1>户外品牌全渠道服务体验调查问卷</h1>'
@@ -629,19 +606,16 @@ function renderSurvey() {
 }
 
 function selectAnswer(qId, value) {
-  state.answers[qId] = value;
+  // 防重复点击
+  if (state.answers[qId] === value) return;
 
-  // 取消之前的跳转计时
-  if (state.advanceTimer) {
-    clearTimeout(state.advanceTimer);
-    state.advanceTimer = null;
-  }
+  state.answers[qId] = value;
+  if (state.advanceTimer) { clearTimeout(state.advanceTimer); state.advanceTimer = null; }
 
   render();
   buildVisibleQuestions();
 
-  var capturedIndex = state.currentIndex;
-  var isLast = capturedIndex >= visibleQuestions.length - 1;
+  var isLast = state.currentIndex >= visibleQuestions.length - 1;
 
   // Q1 选"否"：跳转到提交页
   if (qId === 1 && value === '否') {
@@ -654,14 +628,11 @@ function selectAnswer(qId, value) {
     return;
   }
 
-  // 最后一题不自动跳转
   if (isLast) return;
 
-  // 自动跳转下一题
   state.advanceTimer = setTimeout(function() {
     state.advanceTimer = null;
     if (state.screen !== 'survey') return;
-    if (state.currentIndex >= visibleQuestions.length - 1) return;
     state.currentIndex++;
     render();
     window.scrollTo({ top: 0, behavior: 'smooth' });
