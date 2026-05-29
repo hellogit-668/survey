@@ -122,10 +122,10 @@ body {
   font-size: 15px;
   color: #333;
 }
-.option:hover { border-color: #6ab85a; background: #f8fcf7; }
+.option:hover { border-color: #e6a817; background: #fffdf5; }
 .option.selected {
-  border-color: #4a8c3f;
-  background: #f0f8ed;
+  border-color: #e6a817;
+  background: #fff8e1;
 }
 .option input { display: none; }
 .radio-dot {
@@ -137,12 +137,12 @@ body {
   transition: all 0.2s;
 }
 .option.selected .radio-dot {
-  border-color: #4a8c3f;
+  border-color: #e6a817;
 }
 .option.selected .radio-dot::after {
   content: '';
   width: 10px; height: 10px;
-  background: #4a8c3f;
+  background: #e6a817;
   border-radius: 50%;
 }
 
@@ -164,17 +164,17 @@ body {
   font-size: 15px;
   color: #333;
 }
-.likert-row:hover { border-color: #6ab85a; background: #f8fcf7; }
+.likert-row:hover { border-color: #e6a817; background: #fffdf5; }
 .likert-row.selected {
-  border-color: #4a8c3f;
-  background: #f0f8ed;
+  border-color: #e6a817;
+  background: #fff8e1;
 }
 .likert-row input { display: none; }
 .likert-num {
   width: 32px; height: 32px;
   border-radius: 50%;
-  background: #e8f0e6;
-  color: #2d5a27;
+  background: #eee;
+  color: #666;
   display: flex; align-items: center; justify-content: center;
   font-weight: 700;
   font-size: 15px;
@@ -182,7 +182,7 @@ body {
   transition: all 0.2s;
 }
 .likert-row.selected .likert-num {
-  background: #4a8c3f;
+  background: #e6a817;
   color: #fff;
 }
 
@@ -478,13 +478,14 @@ const likertLabels = [
 const totalQuestions = questions.length;
 
 // ★★★ 替换为你的 Google Apps Script Web 应用 URL ★★★
-const SUBMIT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+const SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbz7lHFJt44hJawVFS2TwTadXmiwyFP53__KNoDvkerJnwETHDmo7BqOSSeSk3-kxCgS/exec';
 
 const state = {
   screen: 'intro', // intro | survey | review | thanks
   currentIndex: 0, // current visible question index (0-based, within visibleQuestions)
   answers: {},     // { questionId: value }
-  skipped: false   // Q1 answered "否"
+  skipped: false,  // Q1 answered "否"
+  advanceTimer: null // prevent double-advance
 };
 
 let visibleQuestions = []; // computed based on skip logic
@@ -612,7 +613,17 @@ function renderSurvey() {
 }
 
 function selectAnswer(qId, value) {
+  // 忽略重复点击同一选项
+  if (state.answers[qId] === value) return;
+
   state.answers[qId] = value;
+
+  // 清除之前的自动跳转计时器
+  if (state.advanceTimer) {
+    clearTimeout(state.advanceTimer);
+    state.advanceTimer = null;
+  }
+
   render();
 
   buildVisibleQuestions();
@@ -621,11 +632,12 @@ function selectAnswer(qId, value) {
 
   // Q1 skip: auto-jump to review page
   if (qId === 1 && value === '否') {
-    setTimeout(() => {
+    state.advanceTimer = setTimeout(function() {
+      state.advanceTimer = null;
       state.screen = 'review';
       render();
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 350);
+    }, 400);
     return;
   }
 
@@ -633,13 +645,14 @@ function selectAnswer(qId, value) {
   if (isLast) return;
 
   // Auto-advance to next question
-  setTimeout(() => {
+  state.advanceTimer = setTimeout(function() {
+    state.advanceTimer = null;
     if (state.screen === 'survey' && state.currentIndex < visibleQuestions.length - 1) {
       state.currentIndex++;
       render();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, 350);
+  }, 400);
 }
 
 function prevQuestion() {
