@@ -669,6 +669,7 @@ function nextQuestion() {
     alert('请先选择本题的答案');
     return;
   }
+  if (state.advanceTimer) { clearTimeout(state.advanceTimer); state.advanceTimer = null; }
   if (state.currentIndex < visibleQuestions.length - 1) {
     state.currentIndex++;
     render();
