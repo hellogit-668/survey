@@ -612,27 +612,31 @@ function renderSurvey() {
   `;
 }
 
+var _advanceId = 0;
+
 function selectAnswer(qId, value) {
-  // 忽略重复点击同一选项
+  // 忽略重复点击同一选项（同题同值）
   if (state.answers[qId] === value) return;
 
   state.answers[qId] = value;
 
-  // 清除之前的自动跳转计时器
+  // 取消之前的跳转计时
   if (state.advanceTimer) {
     clearTimeout(state.advanceTimer);
     state.advanceTimer = null;
   }
 
   render();
-
   buildVisibleQuestions();
-  const idx = state.currentIndex;
-  const isLast = idx >= visibleQuestions.length - 1;
 
-  // Q1 skip: auto-jump to review page
+  var capturedIndex = state.currentIndex;
+  var isLast = capturedIndex >= visibleQuestions.length - 1;
+  var myId = ++_advanceId;
+
+  // Q1 选"否"：跳转到提交页
   if (qId === 1 && value === '否') {
     state.advanceTimer = setTimeout(function() {
+      if (myId !== _advanceId) return;
       state.advanceTimer = null;
       state.screen = 'review';
       render();
@@ -641,17 +645,18 @@ function selectAnswer(qId, value) {
     return;
   }
 
-  // Last question: stay, let user click "检查并提交"
+  // 最后一题不自动跳转
   if (isLast) return;
 
-  // Auto-advance to next question
+  // 自动跳转下一题
   state.advanceTimer = setTimeout(function() {
+    if (myId !== _advanceId) return;
     state.advanceTimer = null;
-    if (state.screen === 'survey' && state.currentIndex < visibleQuestions.length - 1) {
-      state.currentIndex++;
-      render();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    if (state.screen !== 'survey') return;
+    if (state.currentIndex !== capturedIndex) return;
+    state.currentIndex++;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, 400);
 }
 
