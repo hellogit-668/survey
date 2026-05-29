@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>户外品牌全渠道服务体验对消费者购买行为的影响研究调查问卷</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f0f4f0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 640px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+@media (min-width: 641px) {
+  .container { min-height: auto; }
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #2d5a27, #4a8c3f);
+  color: #fff;
+  padding: 20px 24px;
+}
+.header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.header .subtitle {
+  font-size: 13px;
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
+/* Progress bar */
+.progress-wrap {
+  padding: 16px 24px 0;
+}
+.progress-bar {
+  height: 6px;
+  background: #e8f0e6;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a8c3f, #6ab85a);
+  border-radius: 3px;
+  transition: width 0.35s ease;
+}
+
+/* Counter */
+.counter {
+  text-align: center;
+  padding: 12px 24px;
+  font-size: 14px;
+  color: #666;
+}
+.counter strong {
+  color: #2d5a27;
+  font-size: 20px;
+}
+
+/* Section tag */
+.section-tag {
+  display: inline-block;
+  background: #e8f0e6;
+  color: #2d5a27;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+/* Question area */
+.question-area {
+  padding: 0 24px 24px;
+  flex: 1;
+}
+.question-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+/* Options */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 15px;
+  color: #333;
+}
+.option:hover { border-color: #6ab85a; background: #f8fcf7; }
+.option.selected {
+  border-color: #4a8c3f;
+  background: #f0f8ed;
+}
+.option input { display: none; }
+.radio-dot {
+  width: 20px; height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.option.selected .radio-dot {
+  border-color: #4a8c3f;
+}
+.option.selected .radio-dot::after {
+  content: '';
+  width: 10px; height: 10px;
+  background: #4a8c3f;
+  border-radius: 50%;
+}
+
+/* Likert scale */
+.likert-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.likert-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 15px;
+  color: #333;
+}
+.likert-row:hover { border-color: #6ab85a; background: #f8fcf7; }
+.likert-row.selected {
+  border-color: #4a8c3f;
+  background: #f0f8ed;
+}
+.likert-row input { display: none; }
+.likert-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: #e8f0e6;
+  color: #2d5a27;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.likert-row.selected .likert-num {
+  background: #4a8c3f;
+  color: #fff;
+}
+
+/* Navigation buttons */
+.nav {
+  display: flex;
+  gap: 12px;
+  padding: 0 24px 24px;
+}
+.nav button {
+  flex: 1;
+  padding: 13px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+.btn-prev {
+  background: #f0f0f0;
+  color: #555;
+}
+.btn-prev:hover { background: #e0e0e0; }
+.btn-prev:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-next {
+  background: linear-gradient(135deg, #2d5a27, #4a8c3f);
+  color: #fff;
+}
+.btn-next:hover { opacity: 0.9; }
+.btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-submit {
+  background: linear-gradient(135deg, #c67a1a, #e8962e);
+  color: #fff;
+  flex: 2;
+}
+.btn-submit:hover { opacity: 0.9; }
+
+/* Review page */
+.review-section {
+  padding: 0 24px 24px;
+}
+.review-item {
+  padding: 14px 16px;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.review-item .q {
+  color: #888;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.review-item .a {
+  color: #2d5a27;
+  font-weight: 600;
+}
+.review-item.unanswered .a {
+  color: #e05050;
+}
+
+/* Thank you page */
+.thank-you {
+  text-align: center;
+  padding: 48px 24px;
+}
+.thank-you .icon { font-size: 56px; margin-bottom: 16px; }
+.thank-you h2 { color: #2d5a27; margin-bottom: 8px; }
+.thank-you p { color: #666; font-size: 15px; line-height: 1.6; }
+
+/* Contact */
+.contact {
+  text-align: center;
+  padding: 16px 24px 24px;
+  font-size: 13px;
+  color: #999;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 8px;
+}
+.contact span {
+  color: #4a8c3f;
+  font-weight: 600;
+}
+
+/* Intro page */
+.intro {
+  padding: 24px;
+}
+.intro p {
+  font-size: 15px;
+  color: #444;
+  line-height: 1.8;
+  margin-bottom: 12px;
+  text-indent: 2em;
+}
+.intro .start-btn {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .header h1 { font-size: 16px; }
+  .question-title { font-size: 15px; }
+  .option, .likert-row { font-size: 14px; padding: 12px 14px; }
+  .header { padding: 16px 18px; }
+  .question-area, .nav, .progress-wrap { padding-left: 18px; padding-right: 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="app"></div>
+
+<script>
+const questions = [
+  // === 基本情况 (Q1-Q7) ===
+  {
+    id: 1, section: '基本情况',
+    title: '1. 您是否购买过户外品牌产品？',
+    type: 'choice',
+    options: [
+      { label: '是', value: '是' },
+      { label: '否（请跳至问卷末尾，提交答卷）', value: '否' }
+    ],
+    skipIf: '否'
+  },
+  {
+    id: 2, section: '基本情况',
+    title: '2. 您的性别是？',
+    type: 'choice',
+    options: [
+      { label: '男', value: '男' },
+      { label: '女', value: '女' }
+    ]
+  },
+  {
+    id: 3, section: '基本情况',
+    title: '3. 您的年龄是？',
+    type: 'choice',
+    options: [
+      { label: '18岁及以下', value: 'A' },
+      { label: '19-30岁', value: 'B' },
+      { label: '31-40岁', value: 'C' },
+      { label: '41-50岁', value: 'D' },
+      { label: '51岁及以上', value: 'E' }
+    ]
+  },
+  {
+    id: 4, section: '基本情况',
+    title: '4. 您的教育程度是？',
+    type: 'choice',
+    options: [
+      { label: '高中及以下', value: 'A' },
+      { label: '专科', value: 'B' },
+      { label: '本科', value: 'C' },
+      { label: '硕士及以上', value: 'D' }
+    ]
+  },
+  {
+    id: 5, section: '基本情况',
+    title: '5. 您每月可支配消费金额为？',
+    type: 'choice',
+    options: [
+      { label: '1000元以下', value: 'A' },
+      { label: '1000-2000元（不含1000）', value: 'B' },
+      { label: '2000-4000元（不含2000）', value: 'C' },
+      { label: '4000元以上（不含4000）', value: 'D' }
+    ]
+  },
+  {
+    id: 6, section: '基本情况',
+    title: '6. 您购买户外品牌产品的主要渠道是？',
+    type: 'choice',
+    options: [
+      { label: '线下实体门店', value: 'A' },
+      { label: '品牌官方电商平台', value: 'B' },
+      { label: '短视频/直播平台', value: 'C' },
+      { label: '第三方购物平台', value: 'D' }
+    ]
+  },
+  {
+    id: 7, section: '基本情况',
+    title: '7. 您购买户外品牌产品的频率是？',
+    type: 'choice',
+    options: [
+      { label: '极少购买（一年及以上一次）', value: 'A' },
+      { label: '偶尔购买（每年1-2次）', value: 'B' },
+      { label: '常规购买（每季度1次）', value: 'C' },
+      { label: '频繁购买（每月及以上）', value: 'D' }
+    ]
+  },
+  // === 量表题 (Q8-Q24) ===
+  {
+    id: 8, section: '一、全渠道基础服务体验',
+    title: '8. 我可通过线上、线下多渠道便捷获取户外品牌的产品介绍、活动信息',
+    type: 'likert'
+  },
+  {
+    id: 9, section: '一、全渠道基础服务体验',
+    title: '9. 户外品牌线上线下渠道的产品价格、服务标准、售后政策保持统一',
+    type: 'likert'
+  },
+  {
+    id: 10, section: '一、全渠道基础服务体验',
+    title: '10. 户外品牌各渠道的咨询客服响应及时，能够有效解答我的消费疑问',
+    type: 'likert'
+  },
+  {
+    id: 11, section: '一、全渠道基础服务体验',
+    title: '11. 我可自由切换线上线下渠道完成选购、退换货、售后保养等消费流程',
+    type: 'likert'
+  },
+  {
+    id: 12, section: '二、绿色营销服务体验',
+    title: '12. 该户外品牌会主动公示产品环保材质、低碳生产、可持续发展相关信息',
+    type: 'likert'
+  },
+  {
+    id: 13, section: '二、绿色营销服务体验',
+    title: '13. 该户外品牌提供绿色包装、旧衣回收、户外生态保护公益等绿色服务',
+    type: 'likert'
+  },
+  {
+    id: 14, section: '二、绿色营销服务体验',
+    title: '14. 品牌会通过各渠道普及户外环保知识、绿色消费理念，引导低碳户外出行',
+    type: 'likert'
+  },
+  {
+    id: 15, section: '二、绿色营销服务体验',
+    title: '15. 该品牌的绿色营销服务真实可信，不存在虚假环保宣传、过度营销行为',
+    type: 'likert'
+  },
+  {
+    id: 16, section: '三、消费感知价值体验',
+    title: '16. 该户外品牌的全渠道服务能够让我感受到优质的消费体验，性价比高',
+    type: 'likert'
+  },
+  {
+    id: 17, section: '三、消费感知价值体验',
+    title: '17. 品牌的绿色营销服务能够满足我对绿色消费、健康户外的心理需求',
+    type: 'likert'
+  },
+  {
+    id: 18, section: '三、消费感知价值体验',
+    title: '18. 选择该品牌的产品和服务，能提升我的户外消费幸福感与认同感',
+    type: 'likert'
+  },
+  {
+    id: 19, section: '三、消费感知价值体验',
+    title: '19. 综合服务与产品品质，我认为该户外品牌具备良好的消费价值',
+    type: 'likert'
+  },
+  {
+    id: 20, section: '消费者购买行为',
+    title: '20. 优质的全渠道服务和绿色营销服务，会让我优先选择该户外品牌产品',
+    type: 'likert'
+  },
+  {
+    id: 21, section: '消费者购买行为',
+    title: '21. 良好的品牌服务体验和感知价值，会促使我做出即时购买的消费决策',
+    type: 'likert'
+  },
+  {
+    id: 22, section: '消费者购买行为',
+    title: '22. 满意的服务体验会让我增加该品牌户外产品的购买频次与消费金额',
+    type: 'likert'
+  },
+  {
+    id: 23, section: '消费者购买行为',
+    title: '23. 我会因优质的全渠道服务和绿色服务，持续复购该品牌产品',
+    type: 'likert'
+  },
+  {
+    id: 24, section: '消费者购买行为',
+    title: '24. 良好的消费体验会让我主动推荐他人购买该户外品牌产品',
+    type: 'likert'
+  }
+];
+
+const likertLabels = [
+  { label: '完全不同意', value: 1 },
+  { label: '不太同意', value: 2 },
+  { label: '一般', value: 3 },
+  { label: '比较同意', value: 4 },
+  { label: '完全同意', value: 5 }
+];
+
+const totalQuestions = questions.length;
+
+const state = {
+  screen: 'intro', // intro | survey | review | thanks
+  currentIndex: 0, // current visible question index (0-based, within visibleQuestions)
+  answers: {},     // { questionId: value }
+  skipped: false   // Q1 answered "否"
+};
+
+let visibleQuestions = []; // computed based on skip logic
+
+const app = document.getElementById('app');
+
+function buildVisibleQuestions() {
+  if (state.answers[1] === '否') {
+    state.skipped = true;
+    visibleQuestions = questions.filter(q => q.id === 1);
+  } else {
+    state.skipped = false;
+    visibleQuestions = [...questions];
+  }
+}
+
+function getAnswerDisplay(q) {
+  const val = state.answers[q.id];
+  if (val === undefined || val === null) return null;
+  if (q.type === 'likert') {
+    const item = likertLabels.find(l => l.value === val);
+    return item ? item.label : String(val);
+  }
+  const opt = q.options.find(o => o.value === val);
+  return opt ? opt.label : String(val);
+}
+
+function render() {
+  buildVisibleQuestions();
+  if (state.screen === 'intro') return renderIntro();
+  if (state.screen === 'survey') return renderSurvey();
+  if (state.screen === 'review') return renderReview();
+  if (state.screen === 'thanks') return renderThanks();
+}
+
+// === INTRO ===
+function renderIntro() {
+  app.innerHTML = `
+    <div class="header">
+      <h1>户外品牌全渠道服务体验对消费者购买行为的影响研究调查问卷</h1>
+    </div>
+    <div class="intro">
+      <p>尊敬的先生/女士：</p>
+      <p>您好，非常感谢您在百忙之中抽出时间参与本次调查，本次调查旨在收集相关数据，为课程论文研究提供数据支持。本问卷采用匿名形式，并严格保密，您的回答没有对错之分，请根据您的实际情况和真实想法填写，再次感谢您的宝贵时间与贡献！</p>
+      <p>本问卷共 ${totalQuestions} 题，预计用时 3-5 分钟。</p>
+      <button class="btn-next start-btn" onclick="startSurvey()">开始答题</button>
+    </div>
+    <div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>
+  `;
+}
+
+function startSurvey() {
+  state.screen = 'survey';
+  state.currentIndex = 0;
+  state.answers = {};
+  state.skipped = false;
+  render();
+}
+
+// === SURVEY ===
+function renderSurvey() {
+  const q = visibleQuestions[state.currentIndex];
+  const progress = ((state.currentIndex + 1) / visibleQuestions.length) * 100;
+  const isFirst = state.currentIndex === 0;
+  const isLast = state.currentIndex === visibleQuestions.length - 1;
+  const hasAnswer = state.answers[q.id] !== undefined;
+
+  const currentSection = q.section;
+  const prevQ = state.currentIndex > 0 ? visibleQuestions[state.currentIndex - 1] : null;
+  const showSectionTag = !prevQ || prevQ.section !== currentSection;
+
+  let optionsHtml = '';
+  if (q.type === 'choice') {
+    optionsHtml = '<div class="options">';
+    q.options.forEach(opt => {
+      const sel = state.answers[q.id] === opt.value ? ' selected' : '';
+      optionsHtml += `
+        <label class="option${sel}" onclick="selectAnswer(${q.id}, '${opt.value}')">
+          <input type="radio" name="q${q.id}" value="${opt.value}" ${sel ? 'checked' : ''}>
+          <span class="radio-dot"></span>
+          <span>${opt.label}</span>
+        </label>`;
+    });
+    optionsHtml += '</div>';
+  } else {
+    optionsHtml = '<div class="likert-options">';
+    likertLabels.forEach(item => {
+      const sel = state.answers[q.id] === item.value ? ' selected' : '';
+      optionsHtml += `
+        <label class="likert-row${sel}" onclick="selectAnswer(${q.id}, ${item.value})">
+          <input type="radio" name="q${q.id}" value="${item.value}" ${sel ? 'checked' : ''}>
+          <span class="likert-num">${item.value}</span>
+          <span>${item.label}</span>
+        </label>`;
+    });
+    optionsHtml += '</div>';
+  }
+
+  const sectionTagHtml = showSectionTag ? `<div class="section-tag">${currentSection}</div>` : '';
+
+  app.innerHTML = `
+    <div class="header">
+      <h1>户外品牌全渠道服务体验调查问卷</h1>
+      <div class="subtitle">1-5分别代表"完全不同意"、"不太同意"、"一般"、"比较同意"、"完全同意"</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+    </div>
+    <div class="counter">第 <strong>${state.currentIndex + 1}</strong> / ${visibleQuestions.length} 题</div>
+    <div class="question-area">
+      ${sectionTagHtml}
+      <div class="question-title">${q.title}</div>
+      ${optionsHtml}
+    </div>
+    <div class="nav">
+      <button class="btn-prev" ${isFirst ? 'disabled' : ''} onclick="prevQuestion()">上一题</button>
+      ${isLast ? `
+        <button class="btn-submit" onclick="goReview()">检查并提交</button>
+      ` : `
+        <button class="btn-next" onclick="nextQuestion()">下一题</button>
+      `}
+    </div>
+    <div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>
+  `;
+}
+
+function selectAnswer(qId, value) {
+  state.answers[qId] = value;
+  render();
+
+  buildVisibleQuestions();
+  const idx = state.currentIndex;
+  const isLast = idx >= visibleQuestions.length - 1;
+
+  // Q1 skip: auto-jump to review page
+  if (qId === 1 && value === '否') {
+    setTimeout(() => {
+      state.screen = 'review';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 350);
+    return;
+  }
+
+  // Last question: stay, let user click "检查并提交"
+  if (isLast) return;
+
+  // Auto-advance to next question
+  setTimeout(() => {
+    if (state.screen === 'survey' && state.currentIndex < visibleQuestions.length - 1) {
+      state.currentIndex++;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, 350);
+}
+
+function prevQuestion() {
+  if (state.currentIndex > 0) {
+    state.currentIndex--;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function nextQuestion() {
+  const q = visibleQuestions[state.currentIndex];
+  if (state.answers[q.id] === undefined) {
+    alert('请先选择本题的答案');
+    return;
+  }
+  if (state.currentIndex < visibleQuestions.length - 1) {
+    state.currentIndex++;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+// === REVIEW ===
+function goReview() {
+  const q = visibleQuestions[state.currentIndex];
+  if (state.answers[q.id] === undefined) {
+    alert('请先选择本题的答案');
+    return;
+  }
+  state.screen = 'review';
+  state.currentIndex = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderReview() {
+  let itemsHtml = '';
+  let answeredCount = 0;
+  visibleQuestions.forEach(q => {
+    const display = getAnswerDisplay(q);
+    if (display) {
+      answeredCount++;
+      itemsHtml += `<div class="review-item"><div class="q">${q.title}</div><div class="a">${display}</div></div>`;
+    } else {
+      itemsHtml += `<div class="review-item unanswered"><div class="q">${q.title}</div><div class="a">未作答</div></div>`;
+    }
+  });
+
+  const allAnswered = answeredCount === visibleQuestions.length;
+
+  app.innerHTML = `
+    <div class="header">
+      <h1>请确认您的答案</h1>
+      <div class="subtitle">已答 ${answeredCount} / ${visibleQuestions.length} 题</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" style="width:${(answeredCount / visibleQuestions.length) * 100}%"></div></div>
+    </div>
+    <div class="review-section">
+      ${itemsHtml}
+    </div>
+    <div class="nav">
+      <button class="btn-prev" onclick="backToSurvey()">返回修改</button>
+      <button class="btn-submit" onclick="submitSurvey()">${allAnswered ? '提交答卷' : '确认提交（含未答题）'}</button>
+    </div>
+    <div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>
+  `;
+}
+
+function backToSurvey() {
+  state.screen = 'survey';
+  state.currentIndex = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function submitSurvey() {
+  state.screen = 'thanks';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Log answers to console (for debugging / data collection)
+  console.log('=== 问卷答案 ===', state.answers);
+
+  // You could send data to a server here:
+  // fetch('/api/survey', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(state.answers) });
+}
+
+// === THANKS ===
+function renderThanks() {
+  app.innerHTML = `
+    <div class="thank-you">
+      <div class="icon">🎉</div>
+      <h2>提交成功！</h2>
+      <p>再次感谢您抽出宝贵时间完成本次问卷！<br>祝您生活愉快！</p>
+    </div>
+    <div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>
+  `;
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
