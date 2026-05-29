@@ -1,16 +1,9 @@
-// ============================================
-// 1. 在 Google Sheet 中点击: 扩展程序 → Apps Script
-// 2. 粘贴以下全部代码，替换默认内容
-// 3. 点击顶部"部署" → "新建部署" → 类型选"Web 应用"
-// 4. 访问权限设为"任何人"，点击"部署"
-// 5. 复制生成的 Web 应用 URL，填入 survey.html 的 SUBMIT_URL
-// ============================================
-
 function doPost(e) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var data = JSON.parse(e.postData.contents);
-    var answers = data.answers;
+    var raw = e.postData.contents;
+    var data = JSON.parse(raw);
+    var answers = data.answers || {};
 
     // 如果表头为空，先写入表头
     if (sheet.getLastRow() === 0) {
@@ -43,18 +36,18 @@ function doPost(e) {
       ]);
     }
 
-    var row = [new Date()];
+    // 用字符串键逐个取出
+    var keys = Object.keys(answers);
+    var row = [Utilities.formatDate(new Date(), 'Asia/Shanghai', 'yyyy-MM-dd HH:mm:ss')];
+
     for (var i = 1; i <= 24; i++) {
-      var val = answers[i];
-      if (val === undefined || val === null) {
-        row.push('');
-      } else {
-        row.push(val);
-      }
+      var val = answers[i] || answers[String(i)] || answers[i.toString()] || '';
+      row.push(val);
     }
+
     sheet.appendRow(row);
 
-    return ContentService.createTextOutput(JSON.stringify({ success: true }))
+    return ContentService.createTextOutput(JSON.stringify({ success: true, keys: keys.length }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
@@ -63,6 +56,6 @@ function doPost(e) {
   }
 }
 
-function doGet() {
+function doGet(e) {
   return ContentService.createTextOutput('Survey API OK');
 }

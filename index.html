@@ -723,11 +723,19 @@ function submitSurvey() {
 
   // 提交到 Google Sheets
   if (SUBMIT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+    var payload = JSON.stringify({ answers: state.answers });
     fetch(SUBMIT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ answers: state.answers })
-    }).catch(function(err) { console.log('提交失败:', err); });
+      body: payload
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      alert('提交' + (d.success ? '成功！收到 ' + d.keys + ' 个答案' : '失败：' + d.error));
+    })
+    .catch(function(e) {
+      alert('网络错误：' + e.message);
+    });
   }
 }
 
