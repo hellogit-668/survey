@@ -563,7 +563,7 @@ function renderSurvey() {
     q.options.forEach(opt => {
       const sel = state.answers[q.id] === opt.value ? ' selected' : '';
       optionsHtml += `
-        <label class="option${sel}" onclick="selectAnswer(${q.id}, '${opt.value}')">
+        <label class="option${sel}" onclick="event.preventDefault();selectAnswer(${q.id}, '${opt.value}')">
           <input type="radio" name="q${q.id}" value="${opt.value}" ${sel ? 'checked' : ''}>
           <span class="radio-dot"></span>
           <span>${opt.label}</span>
@@ -575,7 +575,7 @@ function renderSurvey() {
     likertLabels.forEach(item => {
       const sel = state.answers[q.id] === item.value ? ' selected' : '';
       optionsHtml += `
-        <label class="likert-row${sel}" onclick="selectAnswer(${q.id}, ${item.value})">
+        <label class="likert-row${sel}" onclick="event.preventDefault();selectAnswer(${q.id}, ${item.value})">
           <input type="radio" name="q${q.id}" value="${item.value}" ${sel ? 'checked' : ''}>
           <span class="likert-num">${item.value}</span>
           <span>${item.label}</span>
