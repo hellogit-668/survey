@@ -467,15 +467,16 @@ const rawQuestions = [
   }
 ];
 
-// 每道题复制一份：利用浏览器 label 双击 bug 精确跳过副本
+// 第N题与第N+1题之间插入空题作为占位，双击bug正好跳过空题，落在下一真題
 var questions = [];
 for (var i = 0; i < rawQuestions.length; i++) {
   questions.push(rawQuestions[i]);
-  var dup = Object.assign({}, rawQuestions[i]);
-  if (dup.options) dup.options = rawQuestions[i].options; // 浅拷贝共享 options
-  questions.push(dup);
+  if (i < rawQuestions.length - 1) {
+    // 每题后插入一个空占位（最后一题不需要）
+    questions.push({ id: 0, realNum: 0, section: '', title: '', type: 'spacer' });
+  }
 }
-var REAL_TOTAL = rawQuestions.length; // 真实题数 24
+var REAL_TOTAL = rawQuestions.length;
 
 const likertLabels = [
   { label: '完全不同意', value: 1 },
@@ -557,69 +558,74 @@ function startSurvey() {
 
 // === SURVEY ===
 function renderSurvey() {
-  const q = visibleQuestions[state.currentIndex];
-  const progress = (q.realNum / REAL_TOTAL) * 100;
-  const isFirst = state.currentIndex === 0;
-  const isLast = state.currentIndex === visibleQuestions.length - 1;
-  const hasAnswer = state.answers[q.id] !== undefined;
+  var q = visibleQuestions[state.currentIndex];
 
-  const currentSection = q.section;
-  const prevQ = state.currentIndex > 0 ? visibleQuestions[state.currentIndex - 1] : null;
-  const showSectionTag = !prevQ || prevQ.section !== currentSection;
+  // 空占位题：双击跳过用，不显示任何内容
+  if (q.type === 'spacer') {
+    app.innerHTML = '<div class="header"><h1>户外品牌全渠道服务体验调查问卷</h1></div>'
+      + '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div></div>'
+      + '<div class="counter">&nbsp;</div>'
+      + '<div class="question-area"></div>'
+      + '<div class="nav"><button class="btn-prev" onclick="prevQuestion()">上一题</button><button class="btn-next" onclick="nextQuestion()">下一题</button></div>'
+      + '<div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>';
+    return;
+  }
 
-  let optionsHtml = '';
+  var progress = (q.realNum / REAL_TOTAL) * 100;
+  var isFirst = state.currentIndex === 0;
+  var isLast = state.currentIndex === visibleQuestions.length - 1;
+
+  var currentSection = q.section;
+  var prevQ = state.currentIndex > 0 ? visibleQuestions[state.currentIndex - 1] : null;
+  var showSectionTag = !prevQ || prevQ.section !== currentSection;
+
+  var optionsHtml = '';
   if (q.type === 'choice') {
     optionsHtml = '<div class="options">';
-    q.options.forEach(opt => {
-      const sel = state.answers[q.id] === opt.value ? ' selected' : '';
-      optionsHtml += `
-        <label class="option${sel}" onclick="selectAnswer(${q.id}, '${opt.value}')">
-          <input type="radio" name="q${q.id}" value="${opt.value}" ${sel ? 'checked' : ''}>
-          <span class="radio-dot"></span>
-          <span>${opt.label}</span>
-        </label>`;
+    q.options.forEach(function(opt) {
+      var sel = state.answers[q.id] === opt.value ? ' selected' : '';
+      optionsHtml += '<label class="option' + sel + '" onclick="selectAnswer(' + q.id + ', \'' + opt.value + '\')">'
+        + '<input type="radio" name="q' + q.id + '" value="' + opt.value + '" ' + (sel ? 'checked' : '') + '>'
+        + '<span class="radio-dot"></span>'
+        + '<span>' + opt.label + '</span>'
+        + '</label>';
     });
     optionsHtml += '</div>';
   } else {
     optionsHtml = '<div class="likert-options">';
-    likertLabels.forEach(item => {
-      const sel = state.answers[q.id] === item.value ? ' selected' : '';
-      optionsHtml += `
-        <label class="likert-row${sel}" onclick="selectAnswer(${q.id}, ${item.value})">
-          <input type="radio" name="q${q.id}" value="${item.value}" ${sel ? 'checked' : ''}>
-          <span class="likert-num">${item.value}</span>
-          <span>${item.label}</span>
-        </label>`;
+    likertLabels.forEach(function(item) {
+      var sel = state.answers[q.id] === item.value ? ' selected' : '';
+      optionsHtml += '<label class="likert-row' + sel + '" onclick="selectAnswer(' + q.id + ', ' + item.value + ')">'
+        + '<input type="radio" name="q' + q.id + '" value="' + item.value + '" ' + (sel ? 'checked' : '') + '>'
+        + '<span class="likert-num">' + item.value + '</span>'
+        + '<span>' + item.label + '</span>'
+        + '</label>';
     });
     optionsHtml += '</div>';
   }
 
-  const sectionTagHtml = showSectionTag ? `<div class="section-tag">${currentSection}</div>` : '';
+  var sectionTagHtml = showSectionTag ? '<div class="section-tag">' + currentSection + '</div>' : '';
 
-  app.innerHTML = `
-    <div class="header">
-      <h1>户外品牌全渠道服务体验调查问卷</h1>
-      <div class="subtitle">1-5分别代表"完全不同意"、"不太同意"、"一般"、"比较同意"、"完全同意"</div>
-    </div>
-    <div class="progress-wrap">
-      <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
-    </div>
-    <div class="counter">第 <strong>${q.realNum}</strong> / ${REAL_TOTAL} 题</div>
-    <div class="question-area">
-      ${sectionTagHtml}
-      <div class="question-title">${q.title}</div>
-      ${optionsHtml}
-    </div>
-    <div class="nav">
-      <button class="btn-prev" ${isFirst ? 'disabled' : ''} onclick="prevQuestion()">上一题</button>
-      ${isLast ? `
-        <button class="btn-submit" onclick="goReview()">检查并提交</button>
-      ` : `
-        <button class="btn-next" onclick="nextQuestion()">下一题</button>
-      `}
-    </div>
-    <div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>
-  `;
+  app.innerHTML = '<div class="header">'
+    + '<h1>户外品牌全渠道服务体验调查问卷</h1>'
+    + '<div class="subtitle">1-5分别代表"完全不同意"、"不太同意"、"一般"、"比较同意"、"完全同意"</div>'
+    + '</div>'
+    + '<div class="progress-wrap">'
+    + '<div class="progress-bar"><div class="progress-fill" style="width:' + progress + '%"></div></div>'
+    + '</div>'
+    + '<div class="counter">第 <strong>' + q.realNum + '</strong> / ' + REAL_TOTAL + ' 题</div>'
+    + '<div class="question-area">'
+    + sectionTagHtml
+    + '<div class="question-title">' + q.title + '</div>'
+    + optionsHtml
+    + '</div>'
+    + '<div class="nav">'
+    + '<button class="btn-prev" ' + (isFirst ? 'disabled' : '') + ' onclick="prevQuestion()">上一题</button>'
+    + (isLast
+      ? '<button class="btn-submit" onclick="goReview()">检查并提交</button>'
+      : '<button class="btn-next" onclick="nextQuestion()">下一题</button>')
+    + '</div>'
+    + '<div class="contact">如有疑问，请联系 <span>QQ：2032945369</span></div>';
 }
 
 function selectAnswer(qId, value) {
