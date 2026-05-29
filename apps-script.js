@@ -1,7 +1,8 @@
 function doPost(e) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var raw = e.postData.contents;
+    // 表单方式提交，数据在 e.parameter.data 中
+    var raw = e.parameter.data;
     var data = JSON.parse(raw);
     var answers = data.answers || {};
 
