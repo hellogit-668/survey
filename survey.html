@@ -477,6 +477,9 @@ const likertLabels = [
 
 const totalQuestions = questions.length;
 
+// ★★★ 替换为你的 Google Apps Script Web 应用 URL ★★★
+const SUBMIT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+
 const state = {
   screen: 'intro', // intro | survey | review | thanks
   currentIndex: 0, // current visible question index (0-based, within visibleQuestions)
@@ -719,11 +722,15 @@ function submitSurvey() {
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Log answers to console (for debugging / data collection)
-  console.log('=== 问卷答案 ===', state.answers);
-
-  // You could send data to a server here:
-  // fetch('/api/survey', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(state.answers) });
+  // 提交到 Google Sheets
+  if (SUBMIT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+    fetch(SUBMIT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers: state.answers })
+    }).catch(function(){});
+  }
 }
 
 // === THANKS ===
